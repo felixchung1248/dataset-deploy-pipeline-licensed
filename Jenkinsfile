@@ -45,7 +45,8 @@ pipeline {
 
                     // Run the container with necessary volumes and DNS settings, and execute the commands
                     sh """
-                        docker run --password=${env.creds_PSW} --user=${env.creds_USR} --name $CONTAINER_NAME -d -v /tmp:/tmp --dns=${DNS_IP} $DENODO_DOCKER_IMAGE tail -f /dev/null
+						docker login --password=${env.creds_PSW} --user=${env.creds_USR}
+                        docker run --name $CONTAINER_NAME -d -v /tmp:/tmp --dns=${DNS_IP} $DENODO_DOCKER_IMAGE tail -f /dev/null
                         docker exec $CONTAINER_NAME sh -c "mkdir -p /tmp/${CONTAINER_NAME}"
                         docker exec $CONTAINER_NAME sh -c "/opt/denodo/bin/export.sh --server //${env.DENODO_META_SANDBOX_URL}/admin --login admin --password admin --singleuser --repository-element admin:view:/${env.DATASET_NAME} --repository /tmp/${CONTAINER_NAME}"
                         docker exec $CONTAINER_NAME sh -c "/opt/denodo/bin/import.sh --server //${env.DENODO_META_PROD_URL}/admin?admin@admin --singleuser --repository /tmp/${CONTAINER_NAME} --element /databases/admin/views/${env.DATASET_NAME}.vql"
